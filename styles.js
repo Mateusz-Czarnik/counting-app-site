@@ -7,7 +7,7 @@
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "/* You can add global styles to this file, and also import other style files */\nbody {\n    margin: 0;\n    padding: 0;\n}\n"
+module.exports = "/* You can add global styles to this file, and also import other style files */\r\nbody {\r\n    margin: 0;\r\n    padding: 0;\r\n}"
 
 /***/ }),
 
@@ -539,7 +539,7 @@ if(false) {}
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! D:\webdev\VML\Angular_zadania\counting-app\src\styles.css */"./src/styles.css");
+module.exports = __webpack_require__(/*! C:\Nauka\counting-app-test\src\styles.css */"./src/styles.css");
 
 
 /***/ })

@@ -83,7 +83,7 @@ var AppModule = /** @class */ (function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = ":host {\n  width: 100%; }\n\n.wrapper {\n  max-width: 800px;\n  width: 96%;\n  margin: 0 auto; }\n\nh1 {\n  background: #8022b0;\n  text-align: center;\n  color: white;\n  margin: 0;\n  padding: 10px; }\n\n.form {\n  display: flex;\n  flex-flow: row wrap;\n  margin: 50px 0; }\n\n.form input {\n    outline: 0;\n    font-size: 16px;\n    padding: 10px 40px 10px 15px;\n    margin: 0;\n    width: 100%;\n    background: #fff;\n    color: #545e6f;\n    flex-grow: 1;\n    border: 1px solid #d1deeb;\n    border-radius: 3px;\n    transition: all 0.2s ease-in-out; }\n\n.form .error {\n    color: #a94442;\n    background: #f2dede;\n    border: 1px solid #e4b3b3;\n    border-radius: 2px;\n    padding: 8px;\n    font-size: 14px;\n    font-weight: 400;\n    margin: 10px 0 0; }\n\n.form button {\n    cursor: pointer;\n    outline: 0;\n    border: 0;\n    border-radius: 2px;\n    background: #39a1e7;\n    color: #fff;\n    padding: 10px 18px;\n    font-size: 16px;\n    font-weight: 600;\n    transition: all 0.2s ease-in-out;\n    display: block;\n    margin: 20px auto; }\n\n.form .input-wrapper {\n    width: 45%;\n    min-height: 140px; }\n\n.form .input-wrapper:first-child {\n      margin-right: auto; }\n\n.form .input-wrapper:last-child {\n      margin-left: auto; }\n\n.form hr {\n    width: 100%; }\n\nh3 {\n  width: 100%;\n  text-align: center; }\n"
+module.exports = ":host {\n  width: 100%; }\n\n.wrapper {\n  max-width: 800px;\n  width: 96%;\n  margin: 0 auto; }\n\nh1 {\n  background: #8022b0;\n  text-align: center;\n  color: white;\n  margin: 0;\n  padding: 10px; }\n\n.form {\n  display: flex;\n  flex-flow: row wrap;\n  margin: 50px 0; }\n\n.form input {\n    outline: 0;\n    font-size: 16px;\n    padding: 10px 40px 10px 15px;\n    margin: 0;\n    width: 100%;\n    background: #fff;\n    color: #545e6f;\n    flex-grow: 1;\n    border: 1px solid #d1deeb;\n    border-radius: 3px;\n    transition: all 0.2s ease-in-out;\n    box-sizing: border-box; }\n\n.form .error {\n    color: #a94442;\n    background: #f2dede;\n    border: 1px solid #e4b3b3;\n    border-radius: 2px;\n    padding: 8px;\n    font-size: 14px;\n    font-weight: 400;\n    margin: 10px 0 0; }\n\n.form .input-wrapper {\n    width: 45%;\n    min-height: 140px; }\n\n.form .input-wrapper:first-child {\n      margin-right: auto; }\n\n.form .input-wrapper:last-child {\n      margin-left: auto; }\n\n.form hr {\n    width: 100%; }\n\nh3 {\n  width: 100%;\n  text-align: center; }\n\nbutton {\n  cursor: pointer;\n  outline: 0;\n  border: 0;\n  border-radius: 2px;\n  background: #39a1e7;\n  color: #fff;\n  padding: 10px 18px;\n  font-size: 16px;\n  font-weight: 600;\n  transition: all 0.2s ease-in-out;\n  display: block;\n  margin: 20px auto; }\n\n.indicies-list {\n  padding: 80px 0; }\n\n.btn-stop {\n  position: absolute;\n  left: calc(50% - 57px); }\n\n.list-wrapper {\n  position: relative; }\n"
 
 /***/ }),
 
@@ -116,28 +116,70 @@ var AppComponent = /** @class */ (function () {
     function AppComponent(fb, vs) {
         this.fb = fb;
         this.vs = vs;
-        this.list = [];
+        this.listing = false;
         this.form = this.fb.group({
             firstNumber: ['', [_angular_forms__WEBPACK_IMPORTED_MODULE_1__["Validators"].required, this.vs.isInteger]],
             secondNumber: ['', [_angular_forms__WEBPACK_IMPORTED_MODULE_1__["Validators"].required, this.vs.isInteger]],
         });
     }
-    AppComponent.prototype.handleClick = function () {
-        if (this.form.valid) {
+    Object.defineProperty(AppComponent.prototype, "content", {
+        set: function (content) {
+            this.indicesList = content;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    AppComponent.prototype.clearIndicesList = function () {
+        if (this.indicesList)
+            this.indicesList.nativeElement.innerHTML = '';
+    };
+    AppComponent.prototype.buildIndicesList = function (html) {
+        if (this.indicesList)
+            this.indicesList.nativeElement.innerHTML += html;
+    };
+    AppComponent.prototype.handleCalculate = function () {
+        if (this.form.valid && !this.listing) {
             var formVal = this.form.value;
             this.result = this.calculateFormula(parseInt(formVal.firstNumber), parseInt(formVal.secondNumber));
             this.generateList(this.result);
         }
     };
+    AppComponent.prototype.handleStop = function () {
+        this.listing = false;
+    };
+    AppComponent.prototype.generateList = function (result) {
+        this.clearIndicesList();
+        this.listing = true;
+        this.listIndices(0, result);
+    };
+    AppComponent.prototype.listIndices = function (currIdx, lastIdx) {
+        var _this = this;
+        if (this.listing) {
+            setTimeout(function () {
+                var index = currIdx;
+                var string = '';
+                for (var loopIndex = index; loopIndex < index + 100; loopIndex++) {
+                    if (loopIndex > lastIdx)
+                        break;
+                    string += loopIndex + "<br>";
+                    currIdx = loopIndex;
+                }
+                if (currIdx < lastIdx) {
+                    currIdx++;
+                    _this.listIndices(currIdx, lastIdx);
+                }
+                else {
+                    _this.listing = false;
+                }
+                _this.buildIndicesList(string);
+                _this.currIdx = currIdx;
+            }, 50);
+        }
+    };
     AppComponent.prototype.calculateFormula = function (a, b) {
         return a + a * a - b + b * b;
     };
-    AppComponent.prototype.generateList = function (elements) {
-        this.list = [];
-        for (var i = 0; i <= elements; i++) {
-            this.list.push(i);
-        }
-    };
+    // Form helpers
     AppComponent.prototype.numberFormat = function (controlName) {
         var control = this.form.get(controlName);
         return control.hasError('notNumeric') && control.touched;
@@ -146,11 +188,16 @@ var AppComponent = /** @class */ (function () {
         var control = this.form.get(controlName);
         return control.hasError('required') && control.touched;
     };
+    __decorate([
+        Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ViewChild"])('indicesList'),
+        __metadata("design:type", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ElementRef"]),
+        __metadata("design:paramtypes", [_angular_core__WEBPACK_IMPORTED_MODULE_0__["ElementRef"]])
+    ], AppComponent.prototype, "content", null);
     AppComponent = __decorate([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"])({
             selector: 'app-root',
             styles: [__webpack_require__(/*! ./app.component.scss */ "./src/app/containers/app/app.component.scss")],
-            template: "\n      <h1>Enter two whole numbers to calculate result</h1>\n      <div class=\"wrapper\">\n          <div [formGroup]=\"form\" class=\"form\">\n              <div class=\"input-wrapper\">\n                  <label class=\"\">\n                      <input\n                        class=\"\"\n                        type=\"text\"\n                        placeholder=\"First number\"\n                        formControlName=\"firstNumber\"\n                      >\n                  </label>\n                  <div class=\"error\" *ngIf=\"numberFormat('firstNumber')\">\n                      Must be numeric value\n                  </div>\n                  <div class=\"error\" *ngIf=\"required('firstNumber')\">\n                      Field is required\n                  </div>\n              </div>\n              <div class=\"input-wrapper\">\n                  <label class=\"\">\n                      <input\n                        class=\"\"\n                        type=\"text\"\n                        placeholder=\"Second number\"\n                        formControlName=\"secondNumber\"\n                      >\n                  </label>\n                  <div class=\"error\" *ngIf=\"numberFormat('secondNumber')\">\n                      Must be numeric value\n                  </div>\n                  <div class=\"error\" *ngIf=\"required('secondNumber')\">\n                      Field is required\n                  </div>\n              </div>\n              <hr>\n              <h3>Calculating formula: a + a * a - b + b * b</h3>\n              <h3>Result: {{ result }}</h3>\n              <button (click)=\"handleClick()\">Calculate</button>\n          </div>\n          <h3 *ngIf=\"list.length\">List of indexes:</h3>\n          <div *ngIf=\"result > 0 ; else message\">\n              <div *ngFor=\"let number of list\">\n                  {{number}}\n              </div>\n          </div>\n          <ng-template #message>\n              <h3 *ngIf=\"result < 0\">Cannot generate list of indexes</h3>\n          </ng-template>\n      </div>\n  "
+            template: "\n      <h1>Enter two whole numbers to calculate result</h1>\n      <div class=\"wrapper\">\n          <div [formGroup]=\"form\" class=\"form\">\n              <div class=\"input-wrapper\">\n                  <label class=\"\">\n                      <input\n                        class=\"\"\n                        type=\"text\"\n                        placeholder=\"First number\"\n                        formControlName=\"firstNumber\"\n                      >\n                  </label>\n                  <div class=\"error\" *ngIf=\"numberFormat('firstNumber')\">\n                      Must be numeric value\n                  </div>\n                  <div class=\"error\" *ngIf=\"required('firstNumber')\">\n                      Field is required\n                  </div>\n              </div>\n              <div class=\"input-wrapper\">\n                  <label class=\"\">\n                      <input\n                        class=\"\"\n                        type=\"text\"\n                        placeholder=\"Second number\"\n                        formControlName=\"secondNumber\"\n                      >\n                  </label>\n                  <div class=\"error\" *ngIf=\"numberFormat('secondNumber')\">\n                      Must be numeric value\n                  </div>\n                  <div class=\"error\" *ngIf=\"required('secondNumber')\">\n                      Field is required\n                  </div>\n              </div>\n              <hr>\n              <h3>\n                  Calculating formula: a + a * a - b + b * b\n              </h3>\n              <h3>\n                  Result: {{ result }}\n              </h3>\n              <button (click)=\"handleCalculate()\">Calculate</button>\n          </div>\n          <div\n            *ngIf=\"result > 0 ; else message\"\n            class=\"list-wrapper\"\n          >\n              <h1>\n                  Listing <span>{{ currIdx }}</span> of <span>{{ result }}</span>\n              </h1>\n              <button\n                *ngIf=\"listing\"\n                class=\"btn-stop\"\n                (click)=\"handleStop()\"\n              >Stop listing\n              </button>\n              <div class=\"indicies-list\" #indicesList></div>\n          </div>\n          <ng-template #message>\n              <h3 *ngIf=\"result < 0\">\n                  Cannot generate list of indexes\n              </h3>\n          </ng-template>\n      </div>\n  "
         }),
         __metadata("design:paramtypes", [_angular_forms__WEBPACK_IMPORTED_MODULE_1__["FormBuilder"],
             _services_validators_validators_service__WEBPACK_IMPORTED_MODULE_2__["ValidatorsService"]])
@@ -257,7 +304,7 @@ Object(_angular_platform_browser_dynamic__WEBPACK_IMPORTED_MODULE_1__["platformB
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! D:\webdev\VML\Angular_zadania\counting-app\src\main.ts */"./src/main.ts");
+module.exports = __webpack_require__(/*! C:\Nauka\counting-app-test\src\main.ts */"./src/main.ts");
 
 
 /***/ })
